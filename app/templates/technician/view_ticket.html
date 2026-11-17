@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+{% block title %}{{ ticket.ticket_number }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h2><code>{{ ticket.ticket_number }}</code> {{ ticket.subject }}</h2>
+        <span class="badge badge-priority-{{ ticket.priority }}">{{ ticket.priority }}</span>
+        <span class="badge badge-status-{{ ticket.status }}">{{ ticket.status }}</span>
+        <span class="badge bg-secondary">{{ ticket.request_type }}</span>
+    </div>
+    <a href="{{ url_for('technician.dashboard') }}" class="btn btn-outline-secondary btn-sm">Back</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white d-flex justify-content-between">
+                <strong>Description</strong>
+                <span class="text-muted small">by {{ ticket.creator.full_name }} · {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+            </div>
+            <div class="card-body">
+                <p>{{ ticket.description }}</p>
+                <div class="small text-muted">Device: {{ ticket.affected_device or '—' }} | Location: {{ ticket.location or '—' }}</div>
+                {% if ticket.resolution_notes %}
+                <hr><strong class="text-success">Resolution Notes:</strong><p>{{ ticket.resolution_notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Work Logs -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white"><strong><i class="bi bi-journal-text"></i> Troubleshooting Work Logs</strong></div>
+            <div class="card-body">
+                {% for wl in work_logs %}
+                <div class="worklog-entry">
+                    <div class="small text-muted">{{ wl.technician.full_name }} · {{ wl.created_at.strftime('%Y-%m-%d %H:%M') }} · {{ wl.time_spent_minutes }} min</div>
+                    <div style="white-space: pre-wrap;">{{ wl.activity_description }}</div>
+                </div>
+                {% else %}
+                <p class="text-muted">No work logs yet. Add your investigation steps below.</p>
+                {% endfor %}
+                <hr>
+                <form method="POST" action="{{ url_for('technician.add_worklog', ticket_id=ticket.id) }}">
+                    <div class="mb-2">
+                        <textarea name="activity_description" class="form-control" rows="3" required placeholder="Record diagnostic steps, commands (ipconfig, ping, nslookup...), findings, and actions taken..."></textarea>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-auto">
+                            <input type="number" name="time_spent" class="form-control form-control-sm" placeholder="Minutes" min="0" value="15" style="width:100px">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-success btn-sm"><i class="bi bi-plus"></i> Add Work Log</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white"><strong>Comments</strong></div>
+            <div class="card-body">
+                {% for c in comments %}
+                <div class="mb-2 p-2 rounded {% if c.is_internal %}bg-warning bg-opacity-10{% else %}bg-light{% endif %}">
+                    <div class="small text-muted">{{ c.author.full_name }} · {{ c.created_at.strftime('%Y-%m-%d %H:%M') }}{% if c.is_internal %} <span class="badge bg-warning text-dark">Internal</span>{% endif %}</div>
+                    {{ c.comment }}
+                </div>
+                {% endfor %}
+                <form method="POST" action="{{ url_for('technician.add_comment', ticket_id=ticket.id) }}" class="mt-2">
+                    <textarea name="comment" class="form-control mb-2" rows="2" required placeholder="Reply to employee or add internal note..."></textarea>
+                    <div class="form-check mb-2">
+                        <input type="checkbox" name="is_internal" class="form-check-input" id="internal">
+                        <label class="form-check-label" for="internal">Internal note (not visible to employee)</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-sm">Add Comment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white"><strong>Actions</strong></div>
+            <div class="card-body">
+                {% if not ticket.assigned_to or ticket.assigned_to == current_user.id %}
+                {% if ticket.status == 'Open' or not ticket.assigned_to %}
+                <form method="POST" action="{{ url_for('technician.accept_ticket', ticket_id=ticket.id) }}" class="mb-2">
+                    <button type="submit" class="btn btn-primary w-100">Accept Ticket</button>
+                </form>
+                {% endif %}
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('technician.update_status', ticket_id=ticket.id) }}">
+                    <label class="form-label small">Update Status</label>
+                    <select name="status" class="form-select form-select-sm mb-2">
+                        <option value="In Progress" {% if ticket.status=='In Progress' %}selected{% endif %}>In Progress</option>
+                        <option value="Pending User" {% if ticket.status=='Pending User' %}selected{% endif %}>Pending User</option>
+                        <option value="Pending Third Party" {% if ticket.status=='Pending Third Party' %}selected{% endif %}>Pending Third Party</option>
+                        <option value="Resolved" {% if ticket.status=='Resolved' %}selected{% endif %}>Resolved</option>
+                        <option value="Closed" {% if ticket.status=='Closed' %}selected{% endif %}>Closed</option>
+                        <option value="Reopened" {% if ticket.status=='Reopened' %}selected{% endif %}>Reopened</option>
+                    </select>
+                    <textarea name="resolution_notes" class="form-control form-control-sm mb-2" rows="2" placeholder="Resolution notes (required when resolving)"></textarea>
+                    <button type="submit" class="btn btn-outline-primary btn-sm w-100">Update Status</button>
+                </form>
+
+                <hr>
+                <form method="POST" action="{{ url_for('technician.reassign', ticket_id=ticket.id) }}">
+                    <label class="form-label small">Reassign</label>
+                    <select name="technician_id" class="form-select form-select-sm mb-2">
+                        {% for tech in techs %}
+                        <option value="{{ tech.id }}" {% if ticket.assigned_to == tech.id %}selected{% endif %}>{{ tech.full_name }}</option>
+                        {% endfor %}
+                    </select>
+                    <input type="text" name="reason" class="form-control form-control-sm mb-2" placeholder="Reason (optional)">
+                    <button type="submit" class="btn btn-outline-secondary btn-sm w-100">Reassign</button>
+                </form>
+            </div>
+        </div>
+
+        {% if sla %}
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white"><strong>SLA</strong></div>
+            <div class="card-body small">
+                <p>Response: {{ sla.response_target_min }} min
+                    {% if sla.response_overdue %}<span class="sla-breach">BREACHED</span>
+                    {% elif sla.response_met %}<span class="sla-ok">✓ Met</span>{% else %} Pending{% endif %}
+                </p>
+                <p class="mb-0">Resolution: {{ sla.resolution_target_min }} min
+                    {% if sla.resolution_overdue %}<span class="sla-breach">OVERDUE</span>
+                    {% elif sla.resolution_met %}<span class="sla-ok">✓ Met</span>{% else %} Pending{% endif %}
+                </p>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}New Ticket{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-plus-circle"></i> Submit Support Ticket</h2>
+<div class="card border-0 shadow-sm">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label class="form-label">Request Type</label>
+                    <select name="request_type" class="form-select" required>
+                        <option value="Incident">Incident (something is broken)</option>
+                        <option value="Service Request">Service Request (need something)</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Category</label>
+                    <select name="category_id" class="form-select" required>
+                        {% for c in categories %}
+                        <option value="{{ c.id }}">{{ c.category_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Subject</label>
+                    <input type="text" name="subject" class="form-control" required maxlength="200" placeholder="Brief summary of the issue">
+                </div>
+                <div class="col-12">
+                    <label class="form-label">Description</label>
+                    <textarea name="description" class="form-control" rows="5" required placeholder="Describe the problem, when it started, any error messages, and impact on your work..."></textarea>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Impact</label>
+                    <select name="impact" class="form-select">
+                        <option value="High">High - Many users / critical business</option>
+                        <option value="Medium" selected>Medium - Single user, important work</option>
+                        <option value="Low">Low - Minor inconvenience</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Urgency</label>
+                    <select name="urgency" class="form-select">
+                        <option value="High">High - Needed immediately</option>
+                        <option value="Medium" selected>Medium - Needed soon</option>
+                        <option value="Low">Low - Can wait</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Affected Device</label>
+                    <input type="text" name="affected_device" class="form-control" placeholder="e.g. Dell Latitude 5420">
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label">Location / Department</label>
+                    <input type="text" name="location" class="form-control" placeholder="e.g. Finance, 3rd Floor">
+                </div>
+            </div>
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary"><i class="bi bi-send"></i> Submit Ticket</button>
+                <a href="{{ url_for('employee.dashboard') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

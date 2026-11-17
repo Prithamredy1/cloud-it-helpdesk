@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  helpdesk:
+    build: .
+    ports:
+      - "5000:5000"
+    volumes:
+      - helpdesk_data:/app/instance
+      - ./:/app
+    environment:
+      - SECRET_KEY=change-me-in-production
+      - DATABASE_URL=sqlite:////app/instance/helpdesk.db
+    restart: unless-stopped
+
+volumes:
+  helpdesk_data:

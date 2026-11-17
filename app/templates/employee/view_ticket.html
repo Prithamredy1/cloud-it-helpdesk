@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}{{ ticket.ticket_number }}{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-start mb-3">
+    <div>
+        <h2><code>{{ ticket.ticket_number }}</code> {{ ticket.subject }}</h2>
+        <div class="mt-1">
+            <span class="badge badge-priority-{{ ticket.priority }}">{{ ticket.priority }}</span>
+            <span class="badge badge-status-{{ ticket.status }}">{{ ticket.status }}</span>
+            <span class="badge bg-secondary">{{ ticket.request_type }}</span>
+        </div>
+    </div>
+    <a href="{{ url_for('employee.dashboard') }}" class="btn btn-outline-secondary btn-sm">Back</a>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white"><strong>Description</strong></div>
+            <div class="card-body">
+                <p class="mb-0">{{ ticket.description }}</p>
+                {% if ticket.resolution_notes %}
+                <hr>
+                <strong>Resolution:</strong>
+                <p class="mb-0 text-success">{{ ticket.resolution_notes }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white"><strong>Conversation</strong></div>
+            <div class="card-body">
+                {% for c in comments %}
+                <div class="mb-3 {% if c.user_id == current_user.id %}text-end{% endif %}">
+                    <div class="d-inline-block p-2 rounded {% if c.user_id == current_user.id %}bg-primary text-white{% else %}bg-light{% endif %}" style="max-width:80%">
+                        <div class="small opacity-75">{{ c.author.full_name }} · {{ c.created_at.strftime('%Y-%m-%d %H:%M') }}</div>
+                        {{ c.comment }}
+                    </div>
+                </div>
+                {% else %}
+                <p class="text-muted">No comments yet.</p>
+                {% endfor %}
+                <form method="POST" action="{{ url_for('employee.add_comment', ticket_id=ticket.id) }}" class="mt-3">
+                    <div class="input-group">
+                        <input type="text" name="comment" class="form-control" placeholder="Add a comment..." required>
+                        <button class="btn btn-primary" type="submit">Send</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        {% if work_logs %}
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white"><strong>Troubleshooting Work Logs</strong></div>
+            <div class="card-body">
+                {% for wl in work_logs %}
+                <div class="worklog-entry">
+                    <div class="small text-muted">{{ wl.technician.full_name }} · {{ wl.created_at.strftime('%Y-%m-%d %H:%M') }} · {{ wl.time_spent_minutes }} min</div>
+                    <div>{{ wl.activity_description }}</div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white"><strong>Details</strong></div>
+            <div class="card-body small">
+                <p><strong>Created:</strong> {{ ticket.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                <p><strong>Category:</strong> {{ ticket.category.category_name if ticket.category else '—' }}</p>
+                <p><strong>Device:</strong> {{ ticket.affected_device or '—' }}</p>
+                <p><strong>Location:</strong> {{ ticket.location or '—' }}</p>
+                <p><strong>Assigned to:</strong> {{ ticket.assignee.full_name if ticket.assignee else 'Unassigned' }}</p>
+                {% if ticket.resolved_at %}<p><strong>Resolved:</strong> {{ ticket.resolved_at.strftime('%Y-%m-%d %H:%M') }}</p>{% endif %}
+            </div>
+        </div>
+
+        {% if sla %}
+        <div class="card border-0 shadow-sm mb-3">
+            <div class="card-header bg-white"><strong>SLA Status</strong></div>
+            <div class="card-body small">
+                <p>Response target: {{ sla.response_target_min }} min
+                    {% if sla.response_overdue %}<span class="sla-breach">BREACHED</span>{% elif sla.response_met %}<span class="sla-ok">Met</span>{% endif %}
+                </p>
+                <p>Resolution target: {{ sla.resolution_target_min }} min
+                    {% if sla.resolution_overdue %}<span class="sla-breach">OVERDUE</span>{% elif sla.resolution_met %}<span class="sla-ok">Met</span>{% endif %}
+                </p>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if ticket.status == 'Resolved' %}
+        <form method="POST" action="{{ url_for('employee.confirm_resolution', ticket_id=ticket.id) }}">
+            <button type="submit" class="btn btn-success w-100"><i class="bi bi-check-lg"></i> Confirm Resolution & Close</button>
+        </form>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

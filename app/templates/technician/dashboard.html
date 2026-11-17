@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Technician Dashboard{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-tools"></i> Technician Dashboard</h2>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-3">
+        <div class="card stat-card bg-white">
+            <div class="card-body">
+                <div class="text-muted small">My Open Tickets</div>
+                <div class="fs-3 fw-bold text-primary">{{ my_open }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card stat-card bg-white">
+            <div class="card-body">
+                <div class="text-muted small">Unassigned</div>
+                <div class="fs-3 fw-bold text-warning">{{ unassigned|length }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white"><strong>My Assigned Tickets</strong></div>
+            <div class="list-group list-group-flush">
+                {% for t in assigned %}
+                <a href="{{ url_for('technician.view_ticket', ticket_id=t.id) }}" class="list-group-item list-group-item-action">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <code>{{ t.ticket_number }}</code> {{ t.subject[:40] }}{% if t.subject|length > 40 %}...{% endif %}
+                        </div>
+                        <div>
+                            <span class="badge badge-priority-{{ t.priority }}">{{ t.priority }}</span>
+                            <span class="badge badge-status-{{ t.status }}">{{ t.status }}</span>
+                        </div>
+                    </div>
+                </a>
+                {% else %}
+                <div class="list-group-item text-muted">No assigned tickets</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white"><strong>Unassigned / High Priority</strong></div>
+            <div class="list-group list-group-flush">
+                {% for t in unassigned %}
+                <a href="{{ url_for('technician.view_ticket', ticket_id=t.id) }}" class="list-group-item list-group-item-action">
+                    <code>{{ t.ticket_number }}</code> {{ t.subject[:40] }}
+                    <span class="badge badge-priority-{{ t.priority }} float-end">{{ t.priority }}</span>
+                </a>
+                {% endfor %}
+                {% for t in high_priority %}
+                {% if t.assigned_to %}
+                <a href="{{ url_for('technician.view_ticket', ticket_id=t.id) }}" class="list-group-item list-group-item-action">
+                    <code>{{ t.ticket_number }}</code> {{ t.subject[:40] }}
+                    <span class="badge badge-priority-{{ t.priority }} float-end">{{ t.priority }}</span>
+                </a>
+                {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

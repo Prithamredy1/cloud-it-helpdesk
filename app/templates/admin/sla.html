@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}SLA Policies{% endblock %}
+{% block content %}
+<h2>SLA Policies</h2>
+<div class="card border-0 shadow-sm">
+    <table class="table mb-0">
+        <thead class="table-light"><tr><th>Priority</th><th>Response Target</th><th>Resolution Target</th></tr></thead>
+        <tbody>
+            {% for p in policies %}
+            <tr>
+                <td><span class="badge badge-priority-{{ p.priority }}">{{ p.priority }}</span></td>
+                <td>{{ p.response_target_minutes }} minutes</td>
+                <td>{{ p.resolution_target_minutes }} minutes ({{ (p.resolution_target_minutes / 60)|round(1) }} hours)</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

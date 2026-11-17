@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Knowledge Base{% endblock %}
+{% block content %}
+<h2 class="mb-4"><i class="bi bi-journal-bookmark"></i> Knowledge Base</h2>
+<div class="row g-3">
+    {% for a in articles %}
+    <div class="col-md-6">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-body">
+                <h5 class="card-title"><a href="{{ url_for('technician.view_article', article_id=a.id) }}" class="text-decoration-none">{{ a.title }}</a></h5>
+                <p class="card-text text-muted small">{{ a.problem_description[:120] }}...</p>
+                <span class="badge bg-secondary">{{ a.category.category_name if a.category else 'General' }}</span>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <p class="text-muted">No articles published yet.</p>
+    {% endfor %}
+</div>
+{% endblock %}
