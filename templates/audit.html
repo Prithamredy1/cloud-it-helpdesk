@@ -1,0 +1,3 @@
+{% extends 'base.html' %}{% block title %}Audit log{% endblock %}{% block body %}
+<h1>Audit log</h1><p class="mute">Latest 200 actions.</p><div class="panel scroll"><table><tr><th>When (UTC)</th><th>User</th><th>Action</th><th>Ticket</th><th>Change</th></tr>
+{% for a in rows %}<tr><td>{{ a.created_at[:16] }}</td><td>{{ a.full_name }}</td><td>{{ a.action }}</td><td>{{ a.ticket_number or '' }}</td><td>{{ a.old_value or '' }}{{ ' → ' if a.old_value and a.new_value }}{{ a.new_value or '' }}</td></tr>{% endfor %}</table></div>{% endblock %}

@@ -1,0 +1,4 @@
+{% extends 'base.html' %}{% block title %}Knowledge base{% endblock %}{% block body %}
+<h1>Knowledge base</h1><form class="panel row" method="get"><input name="q" value="{{ term }}" placeholder="Search symptoms or titles" aria-label="Search"><button class="btn">Search</button></form>
+{% for a in rows %}<div class="panel"><span class="mute">{{ a.cat }}</span><h2>{{ a.title }}</h2><p><b>Symptoms:</b> {{ a.symptoms }}</p><p><b>Diagnostics:</b> <code>{{ a.diagnostics }}</code></p><p><b>Resolution:</b> {{ a.resolution }}</p></div>
+{% else %}<div class="panel empty">No articles match that search.</div>{% endfor %}{% endblock %}

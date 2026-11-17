@@ -1,0 +1,12 @@
+{% extends 'base.html' %}{% block body %}
+<div class="head"><div><h1>{{ 'Support queue' if stats else 'My tickets' }}</h1><span class="mute">Hello, {{ user.full_name.split()[0] }}.</span></div><a class="btn" href="/tickets/new">New ticket</a></div>
+{% if stats %}
+<div class="panel"><h2>Ticket pipeline</h2><div class="strip">{% for s,c in stats.status %}{% if c %}<i class="s-{{ s|replace(' ','') }}" style="flex:{{ c }}" title="{{ s }}: {{ c }}"></i>{% endif %}{% endfor %}</div>
+<div class="legend">{% for s,c in stats.status %}<span class="s-{{ s|replace(' ','') }}">{{ s }} {{ c }}</span>{% endfor %}</div></div>
+<div class="kpis"><div><span class="mute">Active tickets</span><strong>{{ stats.open }}</strong></div><div><span class="mute">Overdue</span><strong style="color:var(--red)">{{ stats.overdue }}</strong></div>
+<div><span class="mute">SLA compliance</span><strong>{{ (stats.comp ~ '%') if stats.comp is not none else '—' }}</strong></div><div><span class="mute">Avg resolution</span><strong>{{ (stats.avg ~ ' h') if stats.avg is not none else '—' }}</strong></div></div>
+<div class="grid"><div class="panel"><h2>By priority</h2>{% for p,c in stats.prio %}<div class="bar"><span class="b p-{{ p }}">{{ p }}</span><i style="width:{{ c / (stats.total or 1) * 100 }}%"></i>{{ c }}</div>{% endfor %}
+<h2 style="margin-top:20px">By category</h2>{% for n,c in stats.cat %}<div class="bar"><span>{{ n }}</span><i style="width:{{ c / (stats.total or 1) * 100 }}%"></i>{{ c }}</div>{% endfor %}</div>
+<div class="panel"><h2>Technician workload</h2>{% for n,c in stats.load %}<div class="bar"><span>{{ n }}</span><i style="width:{{ c * 15 }}%"></i>{{ c }}</div>{% endfor %}<p class="mute">Active tickets per technician.</p></div></div>
+{% endif %}
+<div class="panel"><h2>{{ 'Latest tickets' if stats else 'Recent requests' }}</h2>{% include '_t.html' %}</div>{% endblock %}

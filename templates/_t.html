@@ -1,0 +1,4 @@
+<div class="scroll"><table><tr><th>Ticket</th><th>Subject</th><th>Priority</th><th>Status</th><th>Assignee</th><th>Created (UTC)</th></tr>
+{% for t in rows %}<tr><td><a href="/tickets/{{ t.id }}">{{ t.ticket_number }}</a></td><td>{{ t.subject }}</td><td><span class="b p-{{ t.priority }}">{{ t.priority }}</span></td>
+<td><span class="b s-{{ t.status|replace(' ','') }}">{{ t.status }}</span></td><td>{{ t.tech or 'Unassigned' }}</td><td>{{ t.created_at[:16] }}</td></tr>
+{% else %}<tr><td colspan="6" class="empty">No tickets here yet.</td></tr>{% endfor %}</table></div>

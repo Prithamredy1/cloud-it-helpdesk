@@ -1,0 +1,16 @@
+{% extends 'base.html' %}{% block title %}{{ t.ticket_number }}{% endblock %}{% block body %}
+{% set staff = user.role != 'employee' %}{% set sl = sla(t) %}
+<div class="head"><div><span class="mute">{{ t.ticket_number }} · {{ t.cat }}</span><h1>{{ t.subject }}</h1></div><div><span class="b p-{{ t.priority }}">{{ t.priority }}</span> <span class="b s-{{ t.status|replace(' ','') }}">{{ t.status }}</span></div></div>
+<div class="panel"><div class="meta"><div><small>Requester</small>{{ t.requester }}</div><div><small>Assignee</small>{{ t.tech or 'Unassigned' }}</div><div><small>Device</small>{{ t.affected_device or '—' }}</div>
+<div><small>Response SLA (due {{ t.response_due[11:16] }})</small><span class="b {{ sl.Response }}">{{ sl.Response }}</span></div><div><small>Resolution SLA (due {{ t.resolve_due[:16] }})</small><span class="b {{ sl.Resolution }}">{{ sl.Resolution }}</span></div></div>
+<p style="white-space:pre-wrap">{{ t.description }}</p>{% if t.resolution %}<p><b>Resolution:</b> {{ t.resolution }}</p>{% endif %}</div>
+<div class="grid"><div class="panel"><h2>Update status</h2><form method="post" action="/tickets/{{ t.id }}/status"><input type="hidden" name="csrf" value="{{ csrf }}">
+<div class="row"><select name="status" aria-label="Status">{% if staff %}{% for s in ['In Progress','Pending User','Pending Third Party','Resolved','Reopened'] + (['Closed'] if user.role=='admin' else []) %}<option>{{ s }}</option>{% endfor %}
+{% else %}<option>Closed</option><option>Reopened</option>{% endif %}</select><button class="btn">Update</button></div>
+{% if staff %}<label>Resolution details (required to resolve or close)</label><textarea name="resolution" style="min-height:70px"></textarea>{% endif %}</form>
+{% if user.role=='admin' %}<h2 style="margin-top:18px">Assign</h2><form method="post" action="/tickets/{{ t.id }}/assign" class="row"><input type="hidden" name="csrf" value="{{ csrf }}"><select name="tech" aria-label="Technician">{% for x in techs %}<option value="{{ x.id }}">{{ x.full_name }}</option>{% endfor %}</select><button class="btn alt">Assign</button></form>{% endif %}</div>
+<div class="panel"><h2>{{ 'Add troubleshooting step' if staff else 'Add a reply' }}</h2>
+<form method="post" action="/tickets/{{ t.id }}/comment"><input type="hidden" name="csrf" value="{{ csrf }}"><textarea name="body" style="min-height:60px" required aria-label="Comment"></textarea><p><button class="btn alt">Send comment</button></p></form>
+{% if staff %}<form method="post" action="/tickets/{{ t.id }}/worklog"><input type="hidden" name="csrf" value="{{ csrf }}"><label>Work log (commands run, findings)</label><textarea name="activity" style="min-height:60px" placeholder="ipconfig /all – DNS pointed to 10.0.0.9"></textarea>
+<div class="row"><input name="minutes" type="number" min="0" placeholder="Minutes spent" aria-label="Minutes"><button class="btn">Log work</button></div></form>{% endif %}</div></div>
+<div class="panel"><h2>Activity</h2><div class="tl">{% for k,n,b,w in ev %}<div class="{{ 'wl' if k=='worklog' }}"><span class="mute">{{ n }} · {{ 'work log' if k=='worklog' else 'comment' }} · {{ w[:16] }}</span><br>{{ b }}</div>{% else %}<span class="mute">No activity yet. Add the first comment above.</span>{% endfor %}</div></div>{% endblock %}

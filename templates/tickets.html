@@ -1,0 +1,5 @@
+{% extends 'base.html' %}{% block title %}Tickets{% endblock %}{% block body %}
+<div class="head"><h1>Tickets</h1><a class="btn" href="/tickets/new">New ticket</a></div>
+<form class="panel row" method="get"><div><label for="q">Search</label><input id="q" name="q" value="{{ term }}" placeholder="Subject or INC-1001"></div>
+<div><label for="s">Status</label><select id="s" name="status"><option value="">All statuses</option>{% for s in statuses %}<option {{ 'selected' if s==st }}>{{ s }}</option>{% endfor %}</select></div><button class="btn">Filter</button></form>
+<div class="panel">{% include '_t.html' %}</div>{% endblock %}

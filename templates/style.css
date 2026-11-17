@@ -1,0 +1,32 @@
+:root{--ink:#1B2A41;--bg:#F3F5F8;--line:#D9DFE7;--teal:#0E7C7B;--mute:#566478;--red:#B83A41}
+*{box-sizing:border-box}body{margin:0;font:15px/1.55 "IBM Plex Sans",system-ui,sans-serif;background:var(--bg);color:var(--ink)}
+a{color:var(--teal)}h1{font-size:24px;margin:0 0 4px}h2{font-size:16px;margin:0 0 12px}.mute{color:var(--mute);font-size:13px}
+.app{display:grid;grid-template-columns:232px 1fr;min-height:100vh}
+aside{background:var(--ink);padding:20px 12px;display:flex;flex-direction:column;gap:2px}
+aside b{color:#fff;font-size:17px;padding:0 10px 18px}
+aside a,aside button{color:#C9D3E0;text-decoration:none;padding:9px 10px;border-radius:6px;background:none;border:0;font:inherit;text-align:left;cursor:pointer;width:100%}
+aside a:hover,aside button:hover,aside a.on{background:#2B3E5C;color:#fff}
+aside .who{margin-top:auto;color:#9FB0C6;font-size:13px;padding:12px 10px 4px}
+main{padding:28px;max-width:1120px;width:100%}.bare{display:grid;place-items:center;min-height:100vh;padding:20px}
+.panel{background:#fff;border:1px solid var(--line);border-radius:8px;padding:18px;margin-bottom:16px}
+.head{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:18px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+table{width:100%;border-collapse:collapse}th{text-align:left;font-size:12px;color:var(--mute);font-weight:500;border-bottom:1px solid var(--line);padding:6px 8px}
+td{padding:10px 8px;border-bottom:1px solid #EDF0F4;vertical-align:top}tr:last-child td{border:0}.scroll{overflow-x:auto}.empty{color:var(--mute);text-align:center;padding:24px}
+.b{display:inline-block;padding:1px 9px;border-radius:99px;font-size:12px;font-weight:500;white-space:nowrap;color:var(--c);background:color-mix(in srgb,var(--c) 13%,#fff)}
+.s-Open{--c:#3F63A8}.s-Assigned{--c:#5E50A8}.s-InProgress{--c:#0E7C7B}.s-PendingUser{--c:#946400}.s-PendingThirdParty{--c:#82508F}.s-Resolved{--c:#2A7348}.s-Closed{--c:#566478}.s-Reopened{--c:#B83A41}
+.p-Critical{--c:#B83A41}.p-High{--c:#B85A18}.p-Medium{--c:#8A6100}.p-Low{--c:#566478}.Met{--c:#2A7348}.Breached{--c:#B83A41}.Running{--c:#566478}
+.strip{display:flex;height:34px;border-radius:6px;overflow:hidden;gap:2px;margin:6px 0 12px}.strip i{background:var(--c)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:13px}.legend span:before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--c);margin-right:6px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);margin:0 0 16px;background:#fff;border:1px solid var(--line);border-radius:8px}
+.kpis div{padding:14px 18px;border-right:1px solid var(--line)}.kpis div:last-child{border:0}.kpis strong{display:block;font-size:26px;font-weight:600;line-height:1.2}
+.bar{display:grid;grid-template-columns:130px 1fr 28px;gap:10px;align-items:center;font-size:14px;margin:7px 0}.bar i{display:block;height:10px;border-radius:5px;background:var(--teal)}
+label{display:block;font-size:13px;font-weight:500;margin:12px 0 4px}input,select,textarea{width:100%;padding:9px 10px;border:1px solid #B9C3D0;border-radius:6px;font:inherit;background:#fff;color:var(--ink)}
+:focus-visible{outline:2px solid var(--teal);outline-offset:2px}textarea{min-height:110px}
+.btn{display:inline-block;background:var(--teal);color:#fff;border:0;border-radius:6px;padding:9px 16px;font:inherit;font-weight:500;cursor:pointer;text-decoration:none}.btn.alt{background:#fff;color:var(--ink);border:1px solid #B9C3D0}
+.row{display:flex;gap:8px;align-items:end;flex-wrap:wrap}.row>*{flex:1;min-width:120px}.row .btn{flex:0}.flash{background:#FFF4E0;border:1px solid #E9C98B;padding:10px 14px;border-radius:6px;margin-bottom:14px}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}.meta small{display:block;color:var(--mute);font-size:12px}
+.tl{border-left:2px solid var(--line);padding-left:16px;margin-left:4px}.tl div{margin-bottom:14px}.tl .wl{border-left:3px solid var(--teal);padding-left:10px}
+.login{width:100%;max-width:400px}.demo{display:flex;gap:6px;flex-wrap:wrap;margin-top:6px}.demo button{font-size:13px;padding:5px 10px}
+@media(max-width:800px){.app{grid-template-columns:1fr}aside{flex-direction:row;flex-wrap:wrap;padding:10px}aside b,aside .who{display:none}aside a,aside button{width:auto}.grid,.kpis{grid-template-columns:1fr 1fr}main{padding:16px}}
+@media(max-width:520px){.grid,.kpis{grid-template-columns:1fr}.kpis div{border-right:0;border-bottom:1px solid var(--line)}}

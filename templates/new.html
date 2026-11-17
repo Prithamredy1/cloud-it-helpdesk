@@ -1,0 +1,10 @@
+{% extends 'base.html' %}{% block title %}New ticket{% endblock %}{% block body %}
+<h1>New ticket</h1><p class="mute">Priority is set automatically from impact and urgency.</p>
+<form class="panel" method="post"><input type="hidden" name="csrf" value="{{ csrf }}">
+<label>Request type</label><select name="kind"><option value="INC">Incident – something is broken</option><option value="SR">Service request – I need something</option></select>
+<label for="s">Subject</label><input id="s" name="subject" maxlength="150" required>
+<div class="row"><div><label>Category</label><select name="category">{% for c in cats %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+<div><label>Affected device</label><input name="device" placeholder="e.g. Dell Latitude 5440"></div></div>
+<div class="row"><div><label>Impact</label><select name="impact"><option value="1">Only me</option><option value="2">My team</option><option value="3">Whole company</option></select></div>
+<div><label>Urgency</label><select name="urgency"><option value="1">Can wait</option><option value="2">Need it today</option><option value="3">Blocking work now</option></select></div></div>
+<label for="d">What is happening?</label><textarea id="d" name="description" required></textarea><p><button class="btn">Submit ticket</button></p></form>{% endblock %}

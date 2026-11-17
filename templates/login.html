@@ -1,0 +1,6 @@
+{% extends 'base.html' %}{% block title %}Sign in{% endblock %}{% block body %}
+<form class="panel login" method="post"><h1>IT Service Desk</h1><p class="mute">Sign in to report an issue or manage tickets.</p>
+<input type="hidden" name="csrf" value="{{ csrf }}"><label for="e">Email</label><input id="e" name="email" type="email" required autofocus>
+<label for="p">Password</label><input id="p" name="password" type="password" required><p><button class="btn">Sign in</button></p>
+<p class="mute">Demo accounts (password: Password123!)</p><div class="demo">
+{% for r,e in [('Employee','employee'),('Technician','technician'),('Admin','admin')] %}<button type="button" class="btn alt" onclick="e.value='{{ e }}@company.com';p.value='Password123!'">{{ r }}</button>{% endfor %}</div></form>{% endblock %}
